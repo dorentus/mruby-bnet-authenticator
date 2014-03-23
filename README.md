@@ -1,7 +1,7 @@
 #mruby-bnet-authenticator
 Battle.net Mobile Authenticator (mruby class)
 
-[![Build Status](https://travis-ci.org/dorentus/mruby-bnet-authenticator.png?branch=master)](https://travis-ci.org/dorentus/mruby-bnet-authenticator)
+[![Build Status](https://travis-ci.org/dorentus/mruby-bnet-authenticator.svg?branch=master)](https://travis-ci.org/dorentus/mruby-bnet-authenticator)
 
 ## Installation, by mrbgems
 - add conf.gem line to `build_config.rb`
