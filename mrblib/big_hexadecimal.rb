@@ -5,10 +5,6 @@ module Bnet
       @is_minus
     end
 
-    def digits
-      @digits
-    end
-
     def initialize(hex_string)
       @is_minus = hex_string =~ /^-/
       @digits = hex_string.gsub(/^-/, '').gsub(/^0+/, '').split(//).reverse
@@ -29,7 +25,7 @@ module Bnet
       end
 
       result_digits = Array.new([other.length, self.length].max).each_with_index.map do |_, index|
-        self.digits[index].to_i(BASE) + other.digits[index].to_i(BASE)
+        self.digit_at(index) + other.digit_at(index)
       end
 
       BigHexadecimal.new self.class.normalize_digits(result_digits, BASE).map{ |v| v.to_s(BASE) }.reverse.join('')
@@ -49,7 +45,7 @@ module Bnet
       end
 
       result_digits = Array.new([other.length, self.length].max).each_with_index.map do |_, index|
-        self.digits[index].to_i(BASE) - other.digits[index].to_i(BASE)
+        self.digit_at(index) - other.digit_at(index)
       end
 
       BigHexadecimal.new self.class.normalize_digits(result_digits, BASE).map{ |v| v.to_s(BASE) }.reverse.join('')
@@ -68,7 +64,7 @@ module Bnet
 
       (0 ... self.length).each do |i|
         (0 ... other.length).each do |j|
-          result_digits[i + j] = self.digits[i].to_i(BASE) * other.digits[j].to_i(BASE)
+          result_digits[i + j] = result_digits[i + j].to_i + self.digit_at(i) * other.digit_at(j)
         end
       end
 
@@ -84,8 +80,7 @@ module Bnet
     end
 
     def divmod(other)
-      div = ZERO
-      mod = self
+      div, mod = ZERO, self
       loop do
         break if mod < other
         mod = mod - other
@@ -95,10 +90,10 @@ module Bnet
     end
 
     def **(other)
-      result = nil, counter = other
+      result, counter = ONE, other
       loop do
         break if counter == ZERO
-        result = self * self
+        result = result * self
         counter = counter - ONE
       end
       result
@@ -133,6 +128,10 @@ module Bnet
 
     def ==(other)
       self.to_s == other.to_s
+    end
+
+    def digit_at(index)
+      c = @digits[index].to_s.to_i(BASE)
     end
 
     def dup
