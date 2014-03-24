@@ -65,19 +65,34 @@ class BnetAuthenticator
       end
 
       def request_for(label, region, path, body = nil)
-        http = HttpRequest.new
-        url = "http://#{BnetAuthenticator::AUTHENTICATOR_HOSTS[region]}#{path}"
+        host = BnetAuthenticator::AUTHENTICATOR_HOSTS[region]
         method = body.nil? ? 'GET' : 'POST'
 
-        response = http.request(method, url, body, {
-          'Content-type' => 'application/octet-stream'
-        })
+        headers = [
+          "Host: #{host}",
+          "User-Agent: mruby-bnet-authenticator",
+          "Accept: */*",
+          "Content-type: application/octet-stream",
+        ]
+        headers.push("Content-Length: #{body.to_s.length}") unless body.nil?
+        q = "#{method} #{path} HTTP/1.0\r\n#{headers.join("\r\n")}\r\n\r\n#{body.to_s}"
 
-        if response.code.to_i != 200
-          raise RequestFailedError.new("Error requesting #{label}: #{response.code}")
+        socket = TCPSocket.new(host, 80)
+        socket.write(q)
+        response_text = ''
+        while ( t = socket.read(1024) )
+          response_text << t
+        end
+        socket.close
+
+        response_header, response_body = response_text.split("\r\n\r\n", 2)
+
+        response_code = response_header.split("\r\n")[0].split(" ", 3)[1].to_i
+        if response_code != 200
+          raise RequestFailedError.new("Error requesting #{label}: #{response_code}")
         end
 
-        response.body
+        response_body
       end
 
     end
