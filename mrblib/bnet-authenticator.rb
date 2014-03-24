@@ -29,8 +29,8 @@ module Bnet
     # @param serial [String]
     # @param secret [String]
     def initialize(serial, secret)
-      raise BadInputError.new("bad serial #{serial}") unless self.class.is_valid_serial?(serial)
-      raise BadInputError.new("bad secret #{secret}") unless self.class.is_valid_secret?(secret)
+      raise Bnet::BadInputError.new("bad serial #{serial}") unless self.class.is_valid_serial?(serial)
+      raise Bnet::BadInputError.new("bad secret #{secret}") unless self.class.is_valid_secret?(secret)
 
       @normalized_serial = self.class.normalize_serial(serial)
       @secret = secret
@@ -41,7 +41,7 @@ module Bnet
     # @return [Bnet::Authenticator]
     def self.request_authenticator(region)
       region = region.to_s.upcase.to_sym
-      raise BadInputError.new("bad region #{region}") unless is_valid_region?(region)
+      raise Bnet::BadInputError.new("bad region #{region}") unless is_valid_region?(region)
 
       k = create_one_time_pad(37)
       model = ("\0" * (16 - CLIENT_MODEL.length) + CLIENT_MODEL)[0, 16]
@@ -61,8 +61,8 @@ module Bnet
     # @param restorecode [String]
     # @return [Bnet::Authenticator]
     def self.restore_authenticator(serial, restorecode)
-      raise BadInputError.new("bad serial #{serial}") unless is_valid_serial?(serial)
-      raise BadInputError.new("bad restoration code #{restorecode}") unless is_valid_restorecode?(restorecode)
+      raise Bnet::BadInputError.new("bad serial #{serial}") unless is_valid_serial?(serial)
+      raise Bnet::BadInputError.new("bad restoration code #{restorecode}") unless is_valid_restorecode?(restorecode)
 
       normalized_serial = normalize_serial(serial)
       region = extract_region(normalized_serial)
@@ -88,7 +88,7 @@ module Bnet
     # @param region [Symbol]
     # @return [Integer] server timestamp in seconds
     def self.request_server_time(region)
-      raise BadInputError.new("bad region #{region}") unless is_valid_region?(region)
+      raise Bnet::BadInputError.new("bad region #{region}") unless is_valid_region?(region)
 
       server_time_big_endian = request_for('server time', region, TIME_REQUEST_PATH)
 
@@ -105,7 +105,7 @@ module Bnet
     #   defaults to current time
     # @return [String, Integer] token and the next timestamp token to change
     def self.get_token(secret, timestamp = nil)
-      raise BadInputError.new("bad seret #{secret}") unless is_valid_secret?(secret)
+      raise Bnet::BadInputError.new("bad seret #{secret}") unless is_valid_secret?(secret)
 
       current = ((timestamp || Time.now.getutc.to_i) / 30).to_i
       digest = Digest::HMAC.digest("\0\0\0\0" + [current].pack('L>'), [secret].pack('H*'), Digest::SHA1)

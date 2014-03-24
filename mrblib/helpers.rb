@@ -54,16 +54,15 @@ module Bnet
         end
 
         def decrypt_response(text, key)
-          text.bytes.zip(key.bytes).reduce('') do |memo, pair|
-            memo + (pair[0] ^ pair[1]).chr
+          text.bytes.each_with_index.reduce('') do |memo, pair|
+            memo + (pair[0] ^ key.bytes[pair[1]]).chr
           end
         end
 
         def rsa_encrypt_bin(bin)
-          # TODO: fix this
-          i = bin.unpack('H*')[0].to_i(16)  # bin to i
-          v = i ** Bnet::RSA_KEY % Bnet::RSA_MOD # RSA
-          v.to_s(16).scan(/.{2}/).map {|s| s.to_i(16)}.pack('C*') # i to bin
+          i = Bnet::BigHexadecimal.new(bin.unpack('H*')[0])
+          v = i ** Bnet::BigHexadecimal.new(Bnet::RSA_KEY_HEX) % Bnet::BigHexadecimal.new(Bnet::RSA_MOD_HEX)
+          v.to_bin
         end
 
         def request_for(label, region, path, body = nil)
@@ -91,7 +90,7 @@ module Bnet
 
           response_code = response_header.split("\r\n")[0].split(" ", 3)[1].to_i
           if response_code != 200
-            raise RequestFailedError.new("Error requesting #{label}: #{response_code}")
+            raise Bnet::RequestFailedError.new("Error requesting #{label}: #{response_code}")
           end
 
           response_body
