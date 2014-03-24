@@ -15,8 +15,32 @@ MRuby::Build.new do |conf|
 end
 ```
 
-## Example
-TODO
+## Usage
+
+Initialize an authenticator with given serial and secret
+----
+```ruby
+authenticator = Bnet::Authenticator.new('CN-1402-1943-1283', '4202aa2182640745d8a807e0fe7e34b30c1edb23')
+puts authenticator
+```
+
+Get a token
+----
+```ruby
+authenticator.get_token
+```
+
+Request a new authenticator from server
+----
+```ruby
+authenticator = Bnet::Authenticator.request_authenticator(:US)
+```
+
+Restore an authenticator from server
+----
+```ruby
+authenticator = Bnet::Authenticator.restore_authenticator('CN-1402-1943-1283', '4CKBN08QEB')
+```
 
 ## License
 under the MIT License:
