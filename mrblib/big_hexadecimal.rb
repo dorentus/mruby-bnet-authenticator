@@ -134,21 +134,38 @@ module Bnet
     end
 
     def divmod(other)
-      raise StandardError.new('div by zero') if other == ZERO
-
       case other
       when ZERO then raise StandardError.new('div by zero')
-      when ONE then [self, ZERO]
-      when TWO then [self.half, self.even? ? ZERO : ONE]
+      when ONE then return [self, ZERO]
+      when TWO then return [self.half, self.even? ? ZERO : ONE]
       else
-        div, mod = ZERO, self
-        loop do
-          break if mod < other
-          mod = mod - other
-          div = div + ONE
-        end
-        [div, mod]
+        return [0, self] if self < other
       end
+
+      counter, power, mid, appr = ZERO, ONE, ZERO, ZERO
+
+      loop do
+        break if self < power * other
+        counter = counter + ONE
+        power = power.double
+      end
+
+      p, q = power, power.half
+      loop do
+        break if counter == ONE
+        comp = (p + q).half
+        mid = comp * other
+
+        if mid < self
+          appr = mid
+          q = comp
+        else
+          p = comp
+        end
+
+        counter = counter - ONE
+      end
+      [q, self - appr]
     end
 
     def **(other)
@@ -159,7 +176,6 @@ module Bnet
       else
         self * (self ** (other - ONE))
       end
-
     end
 
     def mod_pow(exponent, m)
@@ -177,29 +193,37 @@ module Bnet
     end
 
     def half
-      return self.sign_reversed.half.sign_reversed if self.minus?
+      self >> 1
+    end
+
+    def double
+      self << 1
+    end
+
+    def <<(count)
+      return self.sign_reversed.<<(count).sign_reversed if self.minus?
 
       bits = @digits.map do |v|
         c = v.to_s(2)
         (("0" * (4 - c.length)) + c).reverse
       end.join('').split(//)
 
-      bits.shift
+      bits.unshift(*Array.new(count, '0'))
 
       digits = bits.each_slice(4).map { |v| v.join('').reverse.to_i(2) }
 
       BigHexadecimal.new digits, true
     end
 
-    def double
-      return self.sign_reversed.double.sign_reversed if self.minus?
+    def >>(count)
+      return self.sign_reversed.>>(count).sign_reversed if self.minus?
 
       bits = @digits.map do |v|
         c = v.to_s(2)
         (("0" * (4 - c.length)) + c).reverse
       end.join('').split(//)
 
-      bits.unshift('0')
+      bits.shift(count)
 
       digits = bits.each_slice(4).map { |v| v.join('').reverse.to_i(2) }
 
