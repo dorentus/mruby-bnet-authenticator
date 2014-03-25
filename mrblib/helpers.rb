@@ -61,7 +61,7 @@ module Bnet
 
         def rsa_encrypt_bin(bin)
           i = Bnet::BigHexadecimal.new(bin.unpack('H*')[0])
-          v = i ** Bnet::BigHexadecimal.new(Bnet::RSA_KEY_HEX) % Bnet::BigHexadecimal.new(Bnet::RSA_MOD_HEX)
+          v = i.mod_pow(Bnet::BigHexadecimal.new(Bnet::RSA_KEY_HEX), Bnet::BigHexadecimal.new(Bnet::RSA_MOD_HEX))
           v.to_bin
         end
 
