@@ -164,12 +164,10 @@ module Bnet
 
     def mod_pow(exponent, m)
       c, counter = ONE, ZERO
-      exit
       loop do
         break if counter == exponent
         c = (self * c) % m
         counter = counter + ONE
-        puts c.to_s
       end
       c
     end
