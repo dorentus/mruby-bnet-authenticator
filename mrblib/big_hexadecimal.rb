@@ -44,8 +44,6 @@ module Bnet
     BASE = 16
 
     def initialize(hex_string_or_digits, skip_normalize = false)
-      hex_string_or_digits = [hex_string_or_digits] if hex_string_or_digits.is_a? Fixnum
-
       if hex_string_or_digits.is_a? Array
         @is_minus = false
         if skip_normalize
@@ -60,9 +58,9 @@ module Bnet
       end
     end
 
-    ZERO = BigHexadecimal.new 0
-    ONE = BigHexadecimal.new 1
-    TWO = BigHexadecimal.new 2
+    ZERO = BigHexadecimal.new [0]
+    ONE = BigHexadecimal.new [1]
+    TWO = BigHexadecimal.new [2]
 
     def +(other)
       if self.minus? && other.minus?
@@ -71,10 +69,6 @@ module Bnet
         return other - self.sign_reversed
       elsif other.minus?
         return self - other.sign_reversed
-      end
-
-      if self.safe_for_plus? && other.safe_for_plus?
-        return BigHexadecimal.new(self.to_i + other.to_i)
       end
 
       return other + self if self.length < other.length
@@ -100,10 +94,6 @@ module Bnet
         return (other - self).sign_reversed
       end
 
-      if self.safe_for_plus? && other.safe_for_plus?
-        return BigHexadecimal.new(self.to_i - other.to_i)
-      end
-
       result_digits = self.digits.dup
       other.digits.each_with_index do |v1, index|
         result_digits[index] -= v1
@@ -121,32 +111,18 @@ module Bnet
         return (self * other.sign_reversed).sign_revsersed
       end
 
-      if self.safe_for_multiply? && other.safe_for_multiply?
-        return BigHexadecimal.new(self.to_i * other.to_i)
-      elsif self.safe_for_multiply?
-        return other * self
-      elsif other.safe_for_multiply?
-        return ZERO if other == ZERO
-        return self if other == ONE
-        return self.double if other == TWO
-      end
+      return ZERO if other == ZERO
+      return self if other == ONE
+      return self.double if other == TWO
 
-      result_digits = Array.new(self.length / 2 + other.length / 2)
-
-      self.digits.each_slice(2).with_index do |pair0, i|
-        other.digits.each_slice(2).with_index do |pair1, j|
-          v0 = (pair0[1] || 0) * BASE + (pair0[0] || 0)
-          v1 = (pair1[1] || 0) * BASE + (pair1[0] || 0)
+      result_digits = Array.new(self.length + other.length, 0)
+      self.digits.each_with_index do |v0, i|
+        other.digits.each_with_index do |v1, j|
           result_digits[i + j] = (result_digits[i + j] || 0) + v0 * v1
         end
       end
 
-      result_digits = result_digits.map do |v|
-        v.nil? ? [0, 0, 0] : v.divmod(BASE).reverse
-      end.flatten
-
       BigHexadecimal.new result_digits
-
     end
 
     def /(other)
@@ -159,10 +135,6 @@ module Bnet
 
     def divmod(other)
       raise StandardError.new('div by zero') if other == ZERO
-
-      if self.safe_for_multiply? && other.safe_for_multiply?
-        return self.to_i.divmod(other.to_i).map{ |v| BigHexadecimal.new v }
-      end
 
       case other
       when ZERO then raise StandardError.new('div by zero')
@@ -197,8 +169,6 @@ module Bnet
     def half
       return self.sign_reversed.half.sign_reversed if self.minus?
 
-      return BigHexadecimal.new(self.to_i >> 1) if self.safe_for_plus?
-
       bits = @digits.map do |v|
         c = v.to_s(2)
         (("0" * (4 - c.length)) + c).reverse
@@ -214,8 +184,6 @@ module Bnet
     def double
       return self.sign_reversed.double.sign_reversed if self.minus?
 
-      return BigHexadecimal.new(self.to_i << 1) if self.safe_for_plus?
-
       bits = @digits.map do |v|
         c = v.to_s(2)
         (("0" * (4 - c.length)) + c).reverse
@@ -226,7 +194,6 @@ module Bnet
       digits = bits.each_slice(4).map { |v| v.join('').reverse.to_i(2) }
 
       BigHexadecimal.new digits, true
-
     end
 
     def sign_reversed
@@ -288,14 +255,6 @@ module Bnet
 
     def odd?
       !even?
-    end
-
-    def safe_for_plus?
-      self.length <= 7
-    end
-
-    def safe_for_multiply?
-      self.length <= 3
     end
 
     def to_i
