@@ -210,7 +210,8 @@ module Bnet
 
       bits.unshift(*Array.new(count, '0'))
 
-      digits = bits.each_slice(4).map { |v| v.join('').reverse.to_i(2) }
+      digits = []
+      bits.each_slice(4) { |v| digits.push(v.join('').reverse.to_i(2)) }
 
       BigHexadecimal.new digits, true
     end
@@ -225,7 +226,8 @@ module Bnet
 
       bits.shift(count)
 
-      digits = bits.each_slice(4).map { |v| v.join('').reverse.to_i(2) }
+      digits = []
+      bits.each_slice(4) { |v| digits.push(v.join('').reverse.to_i(2)) }
 
       BigHexadecimal.new digits, true
     end
