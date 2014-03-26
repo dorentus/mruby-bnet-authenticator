@@ -8,7 +8,7 @@ end
 
 assert('Bnet::Authenticator#request_authenticator') do
   authenticator = Bnet::Authenticator.request_authenticator :US
-  assert_equal :US, authenticator
+  assert_equal :US, authenticator.region
 end
 
 assert('Bnet::Authenticator#restore_authenticator') do
