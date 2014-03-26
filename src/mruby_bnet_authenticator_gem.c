@@ -1,4 +1,4 @@
-#include "stdlib.h"
+#include <stdlib.h>
 #include "mruby.h"
 #include "mruby/string.h"
 #include "bigd.h"
