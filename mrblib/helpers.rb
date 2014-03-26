@@ -60,9 +60,8 @@ module Bnet
         end
 
         def rsa_encrypt_bin(bin)
-          i = Bnet::BigHexadecimal.new(bin.unpack('H*')[0])
-          v = i.mod_pow(Bnet::BigHexadecimal.new(Bnet::RSA_KEY_HEX), Bnet::BigHexadecimal.new(Bnet::RSA_MOD_HEX))
-          v.to_bin
+          result_hex = Bnet::RsaHelper.mod_exp bin.unpack('H*')[0], Bnet::RSA_KEY_HEX, Bnet::RSA_MOD_HEX
+          [result_hex].pack('H*')
         end
 
         def request_for(label, region, path, body = nil)
