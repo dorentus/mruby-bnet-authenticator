@@ -111,9 +111,10 @@ module Bnet
       digest = Digest::HMAC.digest("\0\0\0\0" + [current].pack('L>'), [secret].pack('H*'), Digest::SHA1)
       start_position = digest[19].unpack('C')[0] & 0xf
 
+      masks = [0x7f, 0xff, 0xff, 0xff]
       token = digest[start_position, 4].bytes.each_with_index.map do |v, index|
-        v * 2 ** (8 * (3 - index))
-      end.reduce(:+) & 0x7fffffff
+        (v & masks[index]) * 2 ** (8 * (3 - index))
+      end.reduce(:+)
 
       return sprintf('%08d', token % 100000000), (current + 1) * 30
     end
