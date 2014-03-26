@@ -5,4 +5,5 @@ MRuby::Gem::Specification.new('mruby-bnet-authenticator') do |spec|
   spec.add_dependency('mruby-digest')
   spec.add_dependency('mruby-regexp-pcre')
   spec.add_dependency('mruby-pack')
+  spec.add_dependency('mruby-socket')
 end
