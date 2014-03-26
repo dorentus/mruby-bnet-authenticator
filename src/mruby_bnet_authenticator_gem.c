@@ -39,7 +39,7 @@ mrb_mod_exp(mrb_state *mrb, mrb_value self)
   mrb_value result;
   result = mrb_str_new_cstr(mrb, result_str);
 
-  free(&result_str);
+  free(result_str);
 
   return result;
 }
