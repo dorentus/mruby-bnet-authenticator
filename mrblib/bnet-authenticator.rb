@@ -108,7 +108,9 @@ module Bnet
       raise Bnet::BadInputError.new("bad seret #{secret}") unless Util.is_valid_secret?(secret)
 
       current = ((timestamp || Time.now.getutc.to_i) / 30).to_i
-      digest = Digest::HMAC.digest("\0\0\0\0" + [current].pack('L>'), [secret].pack('H*'), Digest::SHA1)
+      payload = "\0\0\0\0" + Bnet::Util.unit32_split_to_unit16_be(current).pack('S>S>')
+
+      digest = Digest::HMAC.digest(payload, [secret].pack('H*'), Digest::SHA1)
       start_position = digest[19].unpack('C')[0] & 0xf
 
       masks = [0x7f, 0xff, 0xff, 0xff]

@@ -4,6 +4,7 @@ assert('Bnet::Authenticator#intialize') do
   assert_equal :CN, authenticator.region
   assert_equal ['61459300', 1347279360], authenticator.get_token(1347279358)
   assert_equal ['75939986', 1347279390], authenticator.get_token(1347279360)
+  assert_equal ['59914793', 1370448030], authenticator.get_token(1370448000)
 end
 
 begin
@@ -31,4 +32,5 @@ assert('Bnet::Authenticator#restore_authenticator') do
   assert_equal :CN, authenticator_res.region
   assert_equal ['61459300', 1347279360], authenticator_res.get_token(1347279358)
   assert_equal ['75939986', 1347279390], authenticator_res.get_token(1347279360)
+  assert_equal ['59914793', 1370448030], authenticator_res.get_token(1370448000)
 end
