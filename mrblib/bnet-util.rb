@@ -1,8 +1,7 @@
 module Bnet
 
-  class Authenticator
+  module Util
 
-      # helper methods
       class << self
 
         def is_valid_serial?(serial)
@@ -60,7 +59,7 @@ module Bnet
         end
 
         def rsa_encrypt_bin(bin)
-          result_hex = Bnet::RsaHelper.mod_exp bin.unpack('H*')[0], Bnet::RSA_KEY_HEX, Bnet::RSA_MOD_HEX
+          result_hex = mod_exp bin.unpack('H*')[0], Bnet::RSA_KEY_HEX, Bnet::RSA_MOD_HEX
           [result_hex].pack('H*')
         end
 

@@ -47,13 +47,9 @@ mrb_mod_exp(mrb_state *mrb, mrb_value self)
 void
 mrb_mruby_bnet_authenticator_gem_init(mrb_state* mrb)
 {
-  int ai = mrb_gc_arena_save(mrb);
-
   struct RClass *bnet_module = mrb_define_module(mrb, "Bnet");
-  struct RClass *rsa_helper_class = mrb_define_module_under(mrb, bnet_module, "RsaHelper");
+  struct RClass *rsa_helper_class = mrb_define_module_under(mrb, bnet_module, "Util");
   mrb_define_class_method(mrb, rsa_helper_class, "mod_exp", mrb_mod_exp, MRB_ARGS_REQ(3));
-
-  mrb_gc_arena_restore(mrb, ai);
 }
 
 void
