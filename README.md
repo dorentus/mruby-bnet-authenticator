@@ -11,7 +11,12 @@ MRuby::Build.new do |conf|
 
     # ... (snip) ...
 
-    conf.gem :git => 'https://github.com/dorentus/mruby-bnet-authenticator.git'
+    conf.gem :github => 'iij/mruby-digest'
+    conf.gem :github => 'iij/mruby-io'
+    conf.gem :github => 'iij/mruby-socket'
+    conf.gem :github => 'iij/mruby-regexp-pcre'
+    conf.gem :github => 'iij/mruby-pack'
+    conf.gem :github => 'dorentus/mruby-bnet-authenticator'
 end
 ```
 
