@@ -52,5 +52,5 @@ authenticator = Bnet::Authenticator.restore_authenticator('CN-1402-1943-1283', '
 under the MIT License
 - see LICENSE file
 
-### BigDigits multiple-precision arithmetic library (`src/bigd*.*`)
+### BigDigits multiple-precision arithmetic library (`vendor/bigd*.*`)
 Contains multiple-precision arithmetic code originally written by David Ireland, copyright (c) 2001-13 by D.I. Management Services Pty Limited <www.di-mgt.com.au>, and is used with permission. Link: [Cryptography Software Code](http://www.di-mgt.com.au/crypto.html).
